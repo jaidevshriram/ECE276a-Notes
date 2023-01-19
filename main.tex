@@ -1,0 +1,66 @@
+\documentclass{report}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{pdfpages}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{pdfpages}
+\usepackage[some]{background}
+\usepackage{tcolorbox}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert} % Defines norm command
+\newcommand{\abs}[1]{\lvert#1\rvert}
+
+\usepackage{mathtools}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+}
+
+\title{\huge \textbf{ECE 276: Sensing and Estimation in Robotics}}
+\author{Winter 2023}
+\date{}
+
+\usepackage{lipsum}
+
+\definecolor{titlepagecolor}{cmyk}{1,.60,0,.40}
+
+\backgroundsetup{
+scale=1,
+angle=0,
+opacity=1,
+contents={\begin{tikzpicture}[remember picture,overlay]
+ \path [fill=titlepagecolor] (current page.west)rectangle (current page.north east); 
+ \draw [color=white, very thick] (5,0)--(5,0.5\paperheight);
+\end{tikzpicture}}
+}
+
+\makeatletter                   
+\def\printauthor{%                  
+    {\large \@author}}          
+\makeatother
+
+\graphicspath{{img}}
+
+\begin{document}
+
+\input{macros.tex}
+% \input{cover}
+
+\tableofcontents{}
+
+\setlength{\parskip}{\baselineskip}%
+\setlength{\parindent}{0pt}%
+
+\input{lectures/lec3/3.1.tex}
+
+\end{document}
