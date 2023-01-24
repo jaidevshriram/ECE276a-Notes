@@ -202,7 +202,7 @@ If we are given some information about the roll, pitch, yaw, we can compute the 
 
 Ideally, with three variables, and three degrees of freedom, we should be able to represent all rotations but this is not true. This is gimbal lock. Alternatively, angle paramterizations are not one-to-one.
 
-Example: if the pitch becomes $\theta = 90\deg$, the roll and yaw become associated with the same degree of freedom and cannot be uniquely determined.
+Example: if the pitch becomes $\theta = 90\deg$, the roll and yaw become associated with the same degree of freedom and cannot be uniquely determined. Basically, $R = R_z(\phi)R_y(\pi/2)R_x(\psi + \delta) = R_z(\phi)R_y(\pi/2)R_x(\psi)$
 
 \begin{figure}[h]\centering\includegraphics[width=12cm]{img/j_3_9.png}\caption{Look at what happens after the pitch - two axes align and we can't distinguish between roll and yaw.}\end{figure}
 
@@ -306,6 +306,8 @@ The log map is not unique - so it's not a true inverse. $R$ is not truly inverti
 
 The matrix exponential ``integrates'' $\hat{\theta} \in se(3)$ for one second; the matrix logarithm ``differentiates'' $R \in SO(3)$ to obtain $\hat{\theta} \in se(3)$.
 
+Note that gimbal lock is possible in axis-angle representation as well - \red{Think of an example where this can happen it's not immediately clear to me}.
+
 \subsection{Quaternion}
 
 We now look for a representation that doesn't have singularity. Quaternions are a solution for this, and are an extension of the complex number idea that we had disucssed earlier. 
@@ -326,12 +328,60 @@ The fact that only half the sphere is relevant is called double covering of quat
 
 We can also convert quaternion from axis-angle representation.
 
-\begin{figure}[h]\centering\includegraphics[width=10cm]{img/j_3_21.png}\end{figure}
+\begin{figure}[h]\centering\includegraphics[width=8cm]{img/j_3_21.png}\end{figure}
 
 \clearpage
 
 \textbf{Quaternion Operations}
 
-\begin{figure}[h]\centering\includegraphics[width=12cm]{img/j_3_22.png}\end{figure}
+\begin{figure}[h]\centering\includegraphics[width=10cm]{img/j_3_22.png}\end{figure}
+
+For unit quaternions, the inverse is the same as the conjugate.
+
+The rotation formula above, shows how we can rotate a vector given a quaternion. Typically we do $x' = Rx$. If $x$ is the body position, $R$ is the body frame, then $x'$ is the position in the world frame. Let us convert our 3D position to a 4D vector: $\x \to [0, \x]$. Then, we can rotate it using $q\circ [0, \x]\circ \bar{q}$.
+
+The derivation for quaternion multiplication and rotation can be seen as:
+
+\begin{figure}[h]\centering\includegraphics[width=12cm]{img/j_3_23.png}\end{figure}
+
+In `python', we can use `transform3D' to convert between representations and perform operations.
+
+\section{Rigid Body Poses}
+
+Let $\frame{B}$ be the bodu frame whose position an dorientation with respect to the world frame $\frame{W}$ are $\p\in\R^3$ and $R\in SO(3)$, respectively.
+
+The coordinates of a point $\s_B\in\R^3$ can be converted to the world frame by first rotating the point and then translating it to the world frame:
+
+\begin{equation*}
+    \s_W = R\s_B + \p
+\end{equation*}
+
+This is also known as an affine transform, and we can combine the $R$ and $\p$ into one matrix to make this transformation easier using homogeneous coordinates. For instance,
+
+
+\begin{equation*}
+    \begin{bmatrix} R & p \\ 0^T & 1\end{bmatrix} \begin{bmatrix} \s_B \\ 1 \end{bmatrix} = \begin{bmatrix} \s_W \\ 1 \end{bmatrix} 
+\end{equation*}
+
+We can see that our matrix here, $T\in\R^{4\times4}$. For representation purpose, we will now use underline to symbolise homogeneous coordinates $\underline{\s_B}$.
+
+The pose of a rigid body can be described by a matrix $T$ in the special Euclidian group.
+
+\begin{figure}[h]\centering\includegraphics[width=12cm]{img/j_3_24.png}\end{figure}
+
+The inverse transform can be described as 
+
+\begin{equation*}
+    \begin{bmatrix} R_T & - R^Tp \\ 0 & 1 \end{bmatrix} 
+\end{equation*}
+
+\section*{Composing Transformations}
+
+We also have the liberty to compose transformations, and this can be done in multiple ways via intermediate frames.
+
+For example: Let $T_k$ be the pose of a robot at time $k$, and let $T_{k+1}$ be the pose at time $k+1$. The transformation from $k$ to $k+1$ can be found as ${}_{k}T_{k+1} = {}_kT_{w}{}_wT_{k+1}=T_k^{-1}T_{k+1}$.
+
+\begin{figure}[h]\centering\includegraphics[width=12cm]{img/j_3_26.png}\end{figure}
+
 
 
